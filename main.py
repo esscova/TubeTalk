@@ -76,3 +76,57 @@ def get_video_info(video_url, language=['pt', 'pt-BR', 'en', 'en-US'], translate
     
     except Exception as e:
         return f"Erro ao buscar informações do vídeo: {e}"
+    
+## vetorização
+def create_vector_store(transcript):
+    """Função para criar o vetor a partir da transcrição"""
+    try:
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        docs = text_splitter.create_documents([transcript])
+        
+        embeddings = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_kwargs={"device": "cpu"}
+        )
+        
+        vector_store = FAISS.from_documents(docs, embeddings)
+        return vector_store
+    
+    except Exception as e:
+        return f"Erro ao criar vetor: {e}"
+    
+## langchain pipeline
+def llm_chain(model='hf_hub'):
+    """Função para criar o pipeline do LangChain"""
+    try:
+        system_prompt = """Você é um assistente virtual prestativo. Responda em português, de forma clara e concisa, com base no contexto fornecido da transcrição de um vídeo."""
+        inputs = "Contexto: {context}\nConsulta: {consulta}"
+
+        if model.startswith('hf_hub'):
+            user_prompt = "<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n{}\n<|eot_id|><|start_header_id|>assistant<|end_header_id|>".format(inputs)
+        else:
+            user_prompt = inputs
+        
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("user", user_prompt)
+        ])
+
+        llm = model_hf_hub()
+        chain = prompt | llm | StrOutputParser()
+        return chain
+    
+    except Exception as e:
+        return f"Erro ao criar pipeline: {e}"
+    
+## resumo
+def get_summary(chain, vector_store, query, k=4):
+    """Função para obter o resumo a partir do vetor e da consulta"""
+    try:
+        docs = vector_store.similarity_search(query, k=k)
+        context = "\n".join([doc.page_content for doc in docs])
+        response = chain.invoke({"context": context, "consulta": query})
+        return response['text']
+    
+    except Exception as e:
+        return f"Erro ao obter resumo: {e}"
