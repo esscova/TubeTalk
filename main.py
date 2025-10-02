@@ -1,9 +1,10 @@
 # DEPENDENCIAS
 import streamlit as st
-import resquests
+import requests
 import os
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
+
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 
@@ -12,7 +13,7 @@ from langchain_community.tools import YoutubeSearchTool
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.huggingface_hub import HuggingFaceEmbeddings, HuggingFaceEndpoint
+from langchain_huggingface import HuggingFaceEmbeddings, HuggingFaceEndpoint
 from langchain.vectorstores import FAISS
 
 # CONFIGS
@@ -46,3 +47,32 @@ def model_hf_hub(model='microsoft/Phi-3-mini-4-instruct', temperature=0.1, max_n
         api_key=api_token
     )
     return llm
+
+## informações do vídeo
+### titulo
+def get_video_title(video_url):
+    """Função para extrair o título do vídeo a partir da URL"""
+    try:
+        response = requests.get(video_url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        title = soup.find('meta', property='og:title')
+        if title:
+            return title['content']
+        return "Título não encontrado"
+    
+    except Exception as e:
+        return f"Erro ao buscar título: {e}"
+    
+### informações gerais e transcrição
+def get_video_info(video_url, language=['pt', 'pt-BR', 'en', 'en-US'], translate=None):
+    """Função para extrair informações e transcrição do vídeo a partir da URL"""
+    try:
+        video_id = video_url.split("v=")[-1]
+        result = YouTubeTranscriptApi.fetch(video_id, languages=language, translate=translate)
+        formatter = TextFormatter()
+        transcript = formatter.format_transcript(result).replace("\n", " ")
+        title = get_video_title(video_url)
+        return transcript, title
+    
+    except Exception as e:
+        return f"Erro ao buscar informações do vídeo: {e}"
