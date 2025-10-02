@@ -7,7 +7,29 @@ class UI:
             st.session_state.submitted = False
         if "video_url" not in st.session_state:
             st.session_state.video_url = ""
-    
+
+        # Configuração da página
+        st.set_page_config(page_title="TubeTalk", page_icon="💡", layout="centered")
+
+        # Estilos personalizados
+        st.markdown("""
+            <style>
+                .header-area{
+                    text-align: center;
+                    margin-bottom: 2rem;
+                    padding: 1rem;
+                    border-radius: 10px;
+                    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+                }
+                .video-section{
+                    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+                    padding: 0.5rem;
+                    border-radius: 10px;
+                    margin: 1rem 0;
+                }
+            </style>
+        """, unsafe_allow_html=True)
+
     def reset(self):
         """Reseta o estado da sessão"""
         st.session_state.submitted = False
@@ -15,12 +37,24 @@ class UI:
     
     def run(self):
         """Executa a interface principal"""
-        # --- Conteúdo da página ---
-        st.title("TubeTalk")
-        st.subheader("Your personal YouTube assistant")
-        
+        st.markdown("""
+                        <div class="header-area">
+                            <h1>TubeTalk</h1>
+                            <h2>🤖 Your personal YouTube assistant</h2>
+                            <p>Analyze YouTube videos with ease!</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+
         if not st.session_state.submitted:
-            st.text_input("Enter your YouTube video URL:", key="video_url")
+            st.markdown("<p style='font-size: 1.5rem; font-weight: bold; text-align: center; '>Enter a YouTube video URL to get started:</p>", unsafe_allow_html=True)
+            st.text_input("",
+                          key="video_url",
+                          icon="🔗",
+                          placeholder="https://www.youtube.com/watch?v=example",
+                          label_visibility="collapsed", 
+                          max_chars=100, 
+                          help="Enter a valid YouTube video URL.")
+
             if st.button("Analyze Video"):
                 url = st.session_state.video_url.strip()
                 if url:
@@ -28,10 +62,9 @@ class UI:
                     st.rerun()
                 else:
                     st.error("Please enter a valid YouTube video URL.")
+            st.markdown("<p style='text-align: center; margin-top: 3rem;'>Developed by <a href='https://www.linkedin.com/in/wellington-moreira-santos' target='_blank'>Wellington M Santos</a></p>", unsafe_allow_html=True)
         else:
             url = st.session_state.video_url
-            st.write(f"Analyzing video: {url}")
-            
             try:
                 if "youtu.be/" in url:
                     video_id = url.split("youtu.be/")[1].split("?")[0].split("&")[0]
@@ -40,10 +73,23 @@ class UI:
                 else:
                     raise ValueError("Invalid URL format")
                 
-                st.markdown(
-                    f"<iframe width='560' height='315' src='https://www.youtube.com/embed/{video_id}' frameborder='0'></iframe>",
-                    unsafe_allow_html=True
-                )
+                st.markdown(f"""
+                                <div style='text-align: center;'>
+                                    <h2 style='padding: 1rem;'>Here is the video you submitted:</h2>
+                                    <iframe width='100%' height='315' src='https://www.youtube.com/embed/{video_id}' frameborder='0' style='margin-bottom: 1rem;'></iframe>
+                                    <h2 class="video-section">Information about the video</h2>
+                                    <p style='font-size: 1.2rem;'>Video ID: <strong>{video_id}</strong></p>
+                                    <p style='font-size: 1.2rem;'>Title: <strong>Placeholder Title</strong></p>
+                                    <p style='font-size: 1.2rem;'>Description: <strong>Placeholder Description</strong></p>
+                                    <hr style='margin: 2rem 0;' />                                    
+                                    <h2 class="video-section">Summary</h2>
+                                    <hr style='margin: 2rem 0;' />                                    
+                                    <h2 class="video-section">Themes</h2>
+                                    <hr style='margin: 2rem 0;' />                                    
+                                </div>
+                            """, unsafe_allow_html=True)
+
+
             except Exception as e:
                 st.warning(f"Could not load video thumbnail: {e}")
             
