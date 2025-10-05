@@ -41,9 +41,7 @@ class LLMService:
 		self.temperature = temperature
 		self.max_tokens = max_tokens
 		self.api_key = self._get_api_key(provider=provider, provided_key=api_key)
-
-		# implementar inicialização de llm
-		# self.llm = ...
+		self.llm = self._initialize_llm()
 
 	def _get_api_key(
 		self,
@@ -67,3 +65,43 @@ class LLMService:
 
 		return provided_key
 
+	def _initialize_llm(self):
+		""" Inicializa o modelo LLM no provedor escolhido"""
+
+		try:
+			if self.provider=='openai':
+				if not self.api_key: raise ValueError("Requer API KEY OpenAI")
+				model = self.model_name or 'gpt-3.5-turbo'
+				return ChatOpenAI(
+					model = model,
+					temperature = self.temperature,
+					max_tokens = self.max_tokens,
+					api_key = self.api_key
+					)
+			elif self.provider=='ollama':
+				model = self.model_name or 'phi3'
+				return Ollama(model=model, temperature=self.temperature)
+			elif self.provider=='groq':
+				if not self.api_key:raise ValueError("Requer API KEY Grok"
+				model = self.model_name or 'llama-3.3-70b-versatile'
+				return ChatGroq(
+					model=model,
+					temperature=self.temperature,
+					max_tokens=self.max_tokens,
+					api_key=self.api_key
+					)
+			elif self.provider=='huggingface':
+				if not self.api_key:raise ValueError("Requer API Key Huggingace")
+				model = self.model_name or 'phi3'
+				return HuggingFaceHub(
+					repo_id=model,
+					model_kwargs={
+						'temperature':self.temperature,
+						'max_length':self.max_tokens
+					},
+					huggingface_api_token=self.api_key
+					)
+			else: 
+				raise ValueError(f"Provedor de LLM não suportado: {self.provider}")
+		except Exception as e:
+			raise Exception(f"Falha ao iniciar LLM: {e}")
