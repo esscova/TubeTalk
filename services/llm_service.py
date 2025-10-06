@@ -105,3 +105,23 @@ class LLMService:
 				raise ValueError(f"Provedor de LLM não suportado: {self.provider}")
 		except Exception as e:
 			raise Exception(f"Falha ao iniciar LLM: {e}")
+
+	def generate(self, prompt:str) -> Dict[str, any]:
+		""" Gera texto usando LLM """
+
+		try:
+			if hasattr(self.llm, 'invoke'):
+				response = self.llm.invoke(prompt)
+				text = response.content if hasattr(response, 'content') else str(response)
+			else:text=self.llm(prompt)
+			return {
+			'sucess':True,
+			'text': text.strip(),
+			'error':None
+			}
+		except Exception as e:
+			return {
+			'sucess':False,
+			'text': None,
+			'error':f"Falha ao gerar texto: {e}"
+			}
