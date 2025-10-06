@@ -115,13 +115,39 @@ class LLMService:
 				text = response.content if hasattr(response, 'content') else str(response)
 			else:text=self.llm(prompt)
 			return {
-			'sucess':True,
+			'success':True,
 			'text': text.strip(),
 			'error':None
 			}
 		except Exception as e:
 			return {
-			'sucess':False,
+			'success':False,
 			'text': None,
 			'error':f"Falha ao gerar texto: {e}"
+			}
+
+	def generate_summary(
+		self, 
+		transcript:str,
+		prompt_template:str
+		) -> Dict[str, any]:
+
+		"""Gera um resumo da trancrição"""
+
+		try:
+			prompt = prompt_template.format(transcript=transcript)
+			result = self.generate(prompt)
+
+			if result['success']:
+				return {
+					'success':True,
+					'summary': result['text'],
+					'error':None
+				}
+			else:return result
+		except Exception as e:
+			return {
+				'success':False,
+				'summary':None,
+				'error': f'Falha ao gerar sumario: {e}'
 			}
