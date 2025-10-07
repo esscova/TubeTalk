@@ -151,3 +151,30 @@ class LLMService:
 				'summary':None,
 				'error': f'Falha ao gerar sumario: {e}'
 			}
+	
+	def extract_topics(
+		self,
+		transcript:str,
+		prompt_template:str
+		) -> Dict[str, any]:
+
+		""" Extrai tópicos chave da trancrição """
+
+		try:
+			prompt = prompt_template.format(transcript=transcript)
+			result = self.generate(prompt)
+
+			if result['success']:
+				return {
+					'success':True,
+					'topics': result['text'],
+					'error':None
+				}
+			else:return result
+		except Exception as e:
+			return {
+				'success':False,
+				'topics':None,
+				'error': f'Falha ao extrair tópicos: {e}'
+			}
+	
