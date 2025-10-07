@@ -178,3 +178,34 @@ class LLMService:
 				'error': f'Falha ao extrair tópicos: {e}'
 			}
 	
+	@staticmethod
+	def validate_config(
+		provider:str,
+		api_key:Optional[str]=None
+		) -> Dict[str, any]:
+		""" Valida a configuração do provedor """
+
+		if provider not in LLMService.PROVIDERS_MAP:
+			return {
+				'valid':False,
+				'error':f"Provedor inválido: {provider}"
+			}
+		if provider=='ollama':
+			return {'valid':True, 'error':None}
+
+		env_key_map = {
+			'openai':os.getenv('OPENAI_API_KEY'),
+			'groq':os.getenv('GROQ_API_KEY'),
+			'huggingface':os.getenv('HUGGINGFACEHUB_API_KEY'),
+		}
+
+		has_env_key = env_key_map.get(provider) is not None
+		has_provided_key = api_key is not None and api_key.strip() != ''
+
+		if has_env_key or has_provided_key:
+			return {'valid':True, 'error':None}
+		else:
+			return {
+				'valid':False,
+				'error':f"Falta API Key para o provedor {provider}"
+			}
