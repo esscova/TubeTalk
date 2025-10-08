@@ -82,7 +82,7 @@ class LLMService:
 				model = self.model_name or 'phi3'
 				return Ollama(model=model, temperature=self.temperature)
 			elif self.provider=='groq':
-				if not self.api_key:raise ValueError("Requer API KEY Grok"
+				if not self.api_key:raise ValueError("Requer API KEY Groq")
 				model = self.model_name or 'llama-3.3-70b-versatile'
 				return ChatGroq(
 					model=model,
