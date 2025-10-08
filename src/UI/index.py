@@ -178,7 +178,7 @@ class UI:
         """Analisa a transcrição com o LLM configurado"""
         try:
             # 1. startar LLM com as configs
-            with st.spinner(f"🤖 Generating analysis with {st.session_state.llm_provider.upper()}..."):
+            with st.spinner(f"🤖 Gerando com: {st.session_state.llm_provider.upper()}..."):
                 llm_service = LLMService(
                     provider=st.session_state.llm_provider,
                     model_name=st.session_state.llm_model or None,
