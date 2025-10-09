@@ -4,7 +4,7 @@
 
 import streamlit as st
 from services import LLMService, YouTubeService
-from configs.prompts import SUMMARY_PROMPT_TEMPLATE, TOPICS_PROMPT_TEMPLATE
+from configs.prompts import SUMMARY_PROMPT_TEMPLATE, TOPICS_PROMPT_TEMPLATE, ARTICLE_PROMPT_TEMPLATE
 
 class UI:
     def __init__(self):
@@ -150,7 +150,7 @@ class UI:
             max_tokens = st.slider(
                 "Max Tokens",
                 min_value=100,
-                max_value=2000,
+                max_value=1000,
                 value=st.session_state.llm_max_tokens,
                 step=100,
                 help="Comprimento máximo do texto gerado",
@@ -174,7 +174,7 @@ class UI:
             st.session_state.video_data = video_data
             return video_data
     
-    def analyze_with_llm(self, transcript: str):
+    def analyze_with_llm(self, transcript: str, video_data: dict = None):
         """Analisa a transcrição com o LLM configurado"""
         try:
             # 1. startar LLM com as configs
@@ -207,10 +207,24 @@ class UI:
                     st.error(f"❌ Topics extraction failed: {topics_result['error']}")
                     return None
                 
+                # 4. gerar artigo
+                article_result = llm_service.generate_article(
+                    transcript=transcript,
+                    title=(video_data.get('title') if video_data else None),
+                    prompt_template=ARTICLE_PROMPT_TEMPLATE,
+                    length='long'
+                )
+                if not article_result['success']:
+                    st.error(f"❌ Article generation failed: {article_result['error']}")
+                    return None
+                
                 return {
                     'summary': summary_result['summary'],
-                    'topics': topics_result['topics']
+                    'topics': topics_result['topics'],
+                    'article': article_result['article']
                 }
+            
+
                 
         except Exception as e:
             st.error(f"❌ Falha ao analisar: {str(e)}")
@@ -271,7 +285,15 @@ class UI:
                 {analysis['topics'].replace(chr(10), '<br>')}
             </div>
         """, unsafe_allow_html=True)
-    
+
+        # 3. artigo
+        st.markdown("<h2 class='video-section'>📰 Generated Article</h2>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class='summary-box'>
+                {analysis['article'].replace(chr(10), '<br>')}
+            </div>
+        """, unsafe_allow_html=True)
+
     def run(self):
         """Executa a interface principal"""
         # 1. render header
@@ -305,7 +327,7 @@ class UI:
                     video_data = self.extract_transcript(url)
                    
                     if video_data: #dados?
-                        analysis = self.analyze_with_llm(video_data['transcript'])
+                        analysis = self.analyze_with_llm(video_data['transcript'], video_data)
                         
                         if analysis: # analise?
                             st.session_state.video_data = video_data

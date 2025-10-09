@@ -177,6 +177,62 @@ class LLMService:
 				'topics':None,
 				'error': f'Falha ao extrair tópicos: {e}'
 			}
+
+	def generate_article(
+		self,
+		transcript: str,
+		title: Optional[str]=None,
+		prompt_template: Optional[str]=None,
+		length: str = 'medium'  # 'short'|'medium'|'long'
+		) -> Dict[str, any]:
+		"""
+		Gera um artigo baseado na transcrição.
+
+		Args:
+			transcript: Texto da transcrição
+			title: Título opcional para o artigo
+			prompt_template: Template de prompt (se não fornecido, usa um padrão)
+			length: Tamanho desejado do artigo ('short','medium','long')
+
+		Returns:
+			Dict com 'success', 'article' e 'error'
+		"""
+
+		try:
+			if not transcript or transcript.strip() == '':
+				return {'success': False, 'article': None, 'error': 'Transcript vazio'}
+
+			# Prompt padrão
+			default_prompt = (
+				"Escreva um artigo bem estruturado com base na transcrição abaixo. "
+				"Inclua uma introdução, subtítulos quando apropriado e uma conclusão. "
+				"Use um tom informativo e claro.\n\nTranscrição:\n{transcript}\n\n" 
+			)
+
+			# Ajusta extensão esperada
+			if length == 'short':
+				length_hint = 'Escreva um artigo curto, aproximando-se de 150-300 palavras.'
+			elif length == 'long':
+				length_hint = 'Escreva um artigo longo e detalhado, aproximando-se de 800-1200 palavras.'
+			else:
+				length_hint = 'Escreva um artigo de média extensão, aproximando-se de 400-700 palavras.'
+
+			# Constrói o prompt final
+			prompt_base = prompt_template or default_prompt
+			if title:
+				prompt_full = f"Escreva um artigo em português pt-BR intitulado '{title}'. {length_hint}\n\n" + prompt_base.format(transcript=transcript)
+			else:
+				prompt_full = length_hint + "\n\n" + prompt_base.format(transcript=transcript)
+
+			# Gera com o LLM
+			result = self.generate(prompt_full)
+			if result['success']:
+				return {'success': True, 'article': result['text'], 'error': None}
+			else:
+				return result
+
+		except Exception as e:
+			return {'success': False, 'article': None, 'error': f'Falha ao gerar artigo: {e}'}
 	
 	@staticmethod
 	def validate_config(
