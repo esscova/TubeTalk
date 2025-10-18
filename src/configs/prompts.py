@@ -35,7 +35,7 @@ Instruções claras:
 - Gere também uma meta description de até 160 caracteres.
 - Estruture o artigo assim:
     1) Título (H1)
-    2) Meta description (uma linha)
+    2) Escreva aqui a Meta description naturalmente chamando a atenção do leitor (uma linha)
     3) Introdução curta (1-2 parágrafos curtos)
     4) 2 a 4 subseções (H2) com subtítulos claros e 1-2 parágrafos explicativos cada
     5) Conclusão curta (1 parágrafo) com principais takeaways
