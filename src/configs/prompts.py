@@ -9,50 +9,48 @@ Transcrição:
 
 Parágrafo introdutório:"""
 
-TOPICS_PROMPT_TEMPLATE = """Você é um assistente especializado em extrair os principais tópicos abordados em vídeos do YouTube.
+TOPICS_PROMPT_TEMPLATE = """Você é um assistente que identifica os tópicos mais importantes de uma transcrição de vídeo.
 
-Analise a seguinte transcrição e identifique os 3-5 tópicos/temas MAIS IMPORTANTES discutidos no vídeo.
+Instruções:
+- Analise a transcrição abaixo e extraia os 3 a 5 tópicos MAIS RELEVANTES, ordenados por importância.
+- Para cada tópico, produza uma linha no formato: "- Título curto: Uma frase que resume o que foi discutido sobre esse tópico."
+- Use títulos de 2 a 5 palavras (curtos) e descrições de no máximo 20 palavras.
+- Não inclua explicações adicionais; apenas a lista de tópicos.
 
-Para cada tópico, forneça:
-1. Nome do tópico (curto e direto)
-2. Breve descrição (1 linha explicando o que foi discutido)
-
-Formato de saída (siga EXATAMENTE):
-• Tópico 1: Descrição breve
-• Tópico 2: Descrição breve
-• Tópico 3: Descrição breve
-
----
-
-TRANSCRIÇÃO DO VÍDEO:
+TRANSCRIÇÃO:
 {transcript}
 
----
-
-TÓPICOS PRINCIPAIS:"""
+SAÍDA (exatamente neste formato):
+- Tópico 1: Descrição breve de 1-2 frases
+- Tópico 2: Descrição breve de 1-2 frases
+- Tópico 3: Descrição breve de 1-2 frases
+"""
 
 ARTICLE_PROMPT_TEMPLATE = """
-Act as an expert copywriter specializing in content optimization for SEO. Your task is to take a given YouTube transcript and transform it into a well-structured and engaging article. Your objectives are as follows:
+Você é um redator experiente em transformar transcrições em artigos otimizados para web.
 
-Content Transformation: Begin by thoroughly reading the provided YouTube transcript. Understand the main ideas, key points, and the overall message conveyed.
+Instruções claras:
+- Leia atentamente a transcrição fornecida e NÃO copie trechos literalmente; reescreva com suas próprias palavras mantendo a ideia central.
+- Se um título (`{title}`) for fornecido, use-o como título do artigo; caso contrário, sugira um título curto e direto.
+- Gere também uma meta description de até 160 caracteres.
+- Estruture o artigo assim:
+    1) Título (H1)
+    2) Meta description (uma linha)
+    3) Introdução curta (1-2 parágrafos curtos)
+    4) 2 a 4 subseções (H2) com subtítulos claros e 1-2 parágrafos explicativos cada
+    5) Conclusão curta (1 parágrafo) com principais takeaways
 
-Sentence Structure: While rephrasing the content, pay careful attention to sentence structure. Ensure that the article flows logically and coherently.
+- Mantenha um tom informativo e objetivo. Use linguagem natural e clara.
+- Integre naturalmente o tópico principal (palavra-chave) sem repetir excessivamente.
+- Evite usar listas extensas; prefira parágrafos explicativos.
 
-Keyword Identification: Identify the main keyword or phrase from the transcript. It's crucial to determine the primary topic that the YouTube video discusses.
+TRANSCRIÇÃO:
+{transcript}
 
-Keyword Integration: Incorporate the identified keyword naturally throughout the article. Use it in headings, subheadings, and within the body text. However, avoid overuse or keyword stuffing, as this can negatively affect SEO.
+TÍTULO SUGERIDO (ou use o título fornecido se houver): {title}
 
-Unique Content: Your goal is to make the article 100% unique. Avoid copying sentences directly from the transcript. Rewrite the content in your own words while retaining the original message and meaning.
-
-SEO Friendliness: Craft the article with SEO best practices in mind. This includes optimizing meta tags (title and meta description), using header tags appropriately, and maintaining an appropriate keyword density.
-
-Engaging and Informative: Ensure that the article is engaging and informative for the reader. It should provide value and insight on the topic discussed in the YouTube video.
-
-Proofreading: Proofread the article for grammar, spelling, and punctuation errors. Ensure it is free of any mistakes that could detract from its quality.
-
-By following these guidelines, create a well-optimized, unique, and informative article that would rank well in search engine results and engage readers effectively.
-
-Transcript:{transcript}"""
+ARTIGO COM META DESCRIPTION:
+"""
 
 # default config
 DEFAULT_GENERATION_CONFIG = {
