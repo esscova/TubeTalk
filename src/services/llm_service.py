@@ -220,9 +220,9 @@ class LLMService:
 			# Constrói o prompt final
 			prompt_base = prompt_template or default_prompt
 			if title:
-				prompt_full = f"Escreva um artigo em português pt-BR intitulado '{title}'. {length_hint}\n\n" + prompt_base.format(transcript=transcript)
+				prompt_full = f"Escreva um artigo em português pt-BR intitulado '{title}'. {length_hint}\n\n" + prompt_base.format(transcript=transcript, title=title)
 			else:
-				prompt_full = length_hint + "\n\n" + prompt_base.format(transcript=transcript)
+				prompt_full = length_hint + "\n\n" + prompt_base.format(transcript=transcript, title="")
 
 			# Gera com o LLM
 			result = self.generate(prompt_full)

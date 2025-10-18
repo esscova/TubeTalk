@@ -210,7 +210,7 @@ class UI:
                 # 4. gerar artigo
                 article_result = llm_service.generate_article(
                     transcript=transcript,
-                    title=(video_data.get('title') if video_data else None),
+                    #title=(video_data.get('title') if video_data else None),
                     prompt_template=ARTICLE_PROMPT_TEMPLATE,
                     length='long'
                 )
@@ -247,52 +247,61 @@ class UI:
         """, unsafe_allow_html=True)
         
         # 1. cards com infos do vídeo
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.markdown(f"""
-                <div class='info-card'>
-                    <strong>🆔 Video ID:</strong><br>
-                    <code>{video_id}</code>
-                </div>
-            """, unsafe_allow_html=True)
-        with col2:
-            st.markdown(f"""
-                <div class='info-card'>
-                    <strong>🌐 Language:</strong><br>
-                    {video_data['transcript_language'].upper()}
-                </div>
-            """, unsafe_allow_html=True)
-        with col3:
-            st.markdown(f"""
-                <div class='info-card'>
-                    <strong>📝 Segments:</strong><br>
-                    {video_data['duration']}
-                </div>
-            """, unsafe_allow_html=True)
+        st.markdown("<h2 class='video-section'>Metadados do Vídeo</h2>", unsafe_allow_html=True)
+        st.write(f"**{video_data['title']}**")
+        st.write(f"Author: {video_data['author']}")
+        st.write(f"Canal: {video_data['channel']}")
+        st.write(f"Published on: {video_data['publish_date']}")
+        st.write(f"views: {video_data['views']} | likes: {video_data.get('like_count', 'N/A')} ")
+        st.write(f"Palavras chave: {video_data.get('keywords', 'N/A')}")
+        # col1, col2, col3 = st.columns(3)
+        # with col1:
+        #     st.markdown(f"""
+        #         <div class='info-card'>
+        #             <strong>🆔 Video ID:</strong><br>
+        #             <code>{video_id}</code>
+        #         </div>
+        #     """, unsafe_allow_html=True)
+        # with col2:
+        #     st.markdown(f"""
+        #         <div class='info-card'>
+        #             <strong>🌐 Language:</strong><br>
+        #             {video_data['transcript_language'].upper()}
+        #         </div>
+        #     """, unsafe_allow_html=True)
+        # with col3:
+        #     st.markdown(f"""
+        #         <div class='info-card'>
+        #             <strong>📝 Segments:</strong><br>
+        #             {video_data['duration']}
+        #         </div>
+        #     """, unsafe_allow_html=True)
         
         # 2. resumo
-        st.markdown("<h2 class='video-section'>📄 Summary</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 class='video-section'>📄 Resumo</h2>", unsafe_allow_html=True)
         st.markdown(f"""
             <div class='summary-box'>
                 {analysis['summary'].replace(chr(10), '<br>')}
             </div>
         """, unsafe_allow_html=True)
-        
-        # 2. tpicos
-        st.markdown("<h2 class='video-section'>🎯 Main Topics</h2>", unsafe_allow_html=True)
-        st.markdown(f"""
-            <div class='summary-box'>
-                {analysis['topics'].replace(chr(10), '<br>')}
-            </div>
-        """, unsafe_allow_html=True)
+
+        # 2. tópicos
+        st.markdown("<h2 class='video-section'>🎯 Tópicos Principais</h2>", unsafe_allow_html=True)
+        # st.markdown(f"""
+        #     <div class='summary-box'>
+        #         {analysis['topics'].replace(chr(10), '<br>')}
+        #     </div>
+        # """, unsafe_allow_html=True)
+        st.markdown(analysis['topics'])
 
         # 3. artigo
-        st.markdown("<h2 class='video-section'>📰 Generated Article</h2>", unsafe_allow_html=True)
-        st.markdown(f"""
-            <div class='summary-box'>
-                {analysis['article'].replace(chr(10), '<br>')}
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown("<h2 class='video-section'>📰 Artigo Gerado</h2>", unsafe_allow_html=True)
+        # st.markdown(f"""
+        #     <div class='summary-box'>
+        #         {analysis['article'].replace(chr(10), '<br>')}
+        #     </div>
+        # """, unsafe_allow_html=True)
+        st.markdown(analysis['article'])
 
     def run(self):
         """Executa a interface principal"""

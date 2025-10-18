@@ -19,7 +19,7 @@ class YouTubeService:
         Args:
             languages: Lista de idiomas preferidos para transcrições
         """
-        self.languages = languages or ["pt", "pt-BR", "en"]
+        self.languages = languages or ["pt", "pt-BR", "en", "en-US"]
     
     @staticmethod
     def extract_video_id(url: str) -> Optional[str]:
