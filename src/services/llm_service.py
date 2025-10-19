@@ -227,7 +227,18 @@ class LLMService:
 			# Gera com o LLM
 			result = self.generate(prompt_full)
 			if result['success']:
-				return {'success': True, 'article': result['text'], 'error': None}
+				article_text = result['text']
+				# Post-process: remover prefix indesejado como 'Meta description:' no início
+				if article_text:
+					clean = article_text.strip()
+					# detectar e remover prefixos comuns
+					for prefix in ['Meta description:', 'Meta-description:', 'Meta Description:']:
+						if clean.startswith(prefix):
+							clean = clean[len(prefix):].lstrip(' -:\n')
+					# garantir que comece com letra maiúscula após limpeza
+					if len(clean) > 0:
+						clean = clean[0].upper() + clean[1:]
+					return {'success': True, 'article': clean, 'error': None}
 			else:
 				return result
 
