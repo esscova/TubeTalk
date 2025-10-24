@@ -11,8 +11,6 @@ try:
 	from langchain_community.llms import HuggingFaceHub
 	from langchain_openai import ChatOpenAI
 	from langchain_groq import ChatGroq
-	from langchain.prompts import PromptTemplate
-	from langchain.chains import LLMChain
 except ImportError as e:
 	print( f'Faltam dependências Langchain: {e}' )
 
