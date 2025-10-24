@@ -1,5 +1,5 @@
 import streamlit as st
-from UI.index import UI
+from UI.ui import UI
 from configs.streamlit_config import PAGE_CONFIG
 
 st.set_page_config(**PAGE_CONFIG)
